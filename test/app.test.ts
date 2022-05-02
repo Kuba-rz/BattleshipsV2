@@ -23,10 +23,17 @@ test('We should be able to clear the grid to initial values', () => {
     }
 })
 
-test('We should be able to create a battleship ship on the grid', () => {
+test('We should be able to create a battleship on the grid', () => {
     const battleships = new battleshipsGame
     battleships.createShip('battleship')
     const grid = battleships.returnGrid()
 
     console.log(grid)
+
+    expect(grid).toEqual(
+        expect.arrayContaining([
+            expect.arrayContaining([
+                expect.objectContaining({ shipName: 'battleship1' })])
+        ])
+    );
 })
