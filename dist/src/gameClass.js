@@ -106,5 +106,72 @@ class BattleshipsGame {
             }
         }
     };
+    //Function to convert a letter which the user enters as the row, to a value which can be used to access the grid
+    findRow(value) {
+        try {
+            if (value.length > 3 || (value.toUpperCase().charCodeAt(0) - 65) < 0 || (value.toUpperCase().charCodeAt(0) - 65) > 9) {
+                return false;
+            }
+            else {
+                return value.toUpperCase().charCodeAt(0) - 65;
+            }
+        }
+        catch {
+            return false;
+        }
+    }
+    //Function to check if the column entered by the user is acceptable
+    findColumn(value) {
+        var r = /\d+/;
+        try {
+            const row = value.match(r)[0] - 1;
+            if (row > 9 || row < 0) {
+                return false;
+            }
+            else {
+                return row;
+            }
+        }
+        catch {
+            return false;
+        }
+    }
+    //Function to check if a ship has been sunk, after each succesful ship
+    checkForSink(ship) {
+        const coordinates = [];
+        for (let i = 0; i < 10; i++) {
+            for (let y = 0; y < 10; y++) {
+                if (this.grid[i][y].shipName == ship && this.grid[i][y].status == 'hit') {
+                    coordinates.push({ row: i, column: y });
+                }
+                else if (this.grid[i][y].shipName == ship && this.grid[i][y].status == true) {
+                    return false;
+                }
+            }
+        }
+        //Create a set out of the coordinataes array, which will eliminate any duplicate coordinates
+        const unique = [...new Set(coordinates)];
+        //Set a status of 'sank' to all squares in coordinatesS
+        for (let coordinate of unique) {
+            this.grid[coordinate.row][coordinate.column].status = 'sank';
+        }
+        return true;
+    }
+    //Function to set the grid for testing purposes
+    setNewGrid(grid) {
+        this.grid = grid;
+        return;
+    }
+    //After sinking a ship, check if game has been won
+    checkForGameOver() {
+        for (let i = 0; i < 10; i++) {
+            for (let y = 0; y < 10; y++) {
+                if (this.grid[i][y].shipName != false && this.grid[i][y].status != 'sank') {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 module.exports = BattleshipsGame;
