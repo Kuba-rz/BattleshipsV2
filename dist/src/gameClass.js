@@ -185,6 +185,7 @@ class BattleshipsGame {
         console.log('Type q to stop playing');
         console.log('***************************************************************');
         let gameOver = false;
+        let numberOfTries = 0;
         while (!gameOver) {
             const asyncGridValue = new Promise((resolve, reject) => {
                 readline.question(`Where do you want to attack? `, (gridAttackValue) => {
@@ -196,6 +197,7 @@ class BattleshipsGame {
                     gameOver = true;
                     process.exit();
                 }
+                numberOfTries += 1;
                 let row = this.findRow(gridAttackValue);
                 let column = this.findColumn(gridAttackValue);
                 //Check if the enterered row and column were filled in correctly
@@ -230,6 +232,7 @@ class BattleshipsGame {
                         console.log('');
                         if (this.checkForGameOver()) {
                             console.log('Congratulations, you have sank all the ships!');
+                            console.log(`It took you ${numberOfTries} tries to finish the game!`);
                             console.log('');
                             gameOver = true;
                             process.exit();
