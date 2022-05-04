@@ -1,3 +1,9 @@
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+})
+
 //Rows
 const alph: string[] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 const emptyGrid: any[] = []
@@ -144,7 +150,7 @@ class BattleshipsGame {
     }
 
     //Function to check if a ship has been sunk, after each succesful ship
-    checkForSink(ship: string) {
+    checkForSink(ship: string | boolean) {
         const coordinates: { row: number, column: number }[] = []
         for (let i = 0; i < 10; i++) {
             for (let y = 0; y < 10; y++) {
@@ -181,6 +187,79 @@ class BattleshipsGame {
             }
         }
         return true
+    }
+
+    async play() {
+        console.log('***************************************************************')
+        console.log('Please type in values in the following format: "A5"/"F8" etc...')
+        console.log('Values from A-J and 1-10 are accepted')
+        console.log('Type q to stop playing')
+        console.log('***************************************************************')
+
+        let gameOver: boolean = false
+
+        while (!gameOver) {
+            const asyncGridValue: any = new Promise((resolve, reject) => {
+                readline.question(`Where do you want to attack? `, (gridAttackValue: string) => {
+                    resolve(gridAttackValue)
+                })
+            })
+            await asyncGridValue.then((gridAttackValue: string) => {
+                if (gridAttackValue.toLowerCase() == 'q') {
+                    gameOver = true;
+                    process.exit()
+                }
+
+                let row: number | boolean = this.findRow(gridAttackValue)
+                let column: number | boolean = this.findColumn(gridAttackValue)
+
+                //Check if the enterered row and column were filled in correctly
+                if (row === false || column === false) {
+                    console.log('')
+                    console.log('Oooops, looks like something went wrong')
+                    console.log('Please type in values in the following format: "A5"/"F8" etc...')
+                    console.log('Values from A-J and 1-10 are accepted')
+                    console.log('')
+                    return
+                }
+
+                let square: { square: string, status: string | boolean, shipName: boolean | string } = this.grid[row][column]
+
+                //Check if user has already attacked this square previously
+                if (square.status != false && square.status != true) {
+                    console.log('')
+                    console.log('You have already attacked here!')
+                    console.log(`The status of this square is: ${square.status}`)
+                    console.log('')
+                    return
+                }
+
+                //Miss
+                if (square.status == false) {
+                    console.log('You have missed! Try again')
+                    this.grid[row][column].status = 'miss'
+
+                    //Hit
+                } else {
+                    console.log('Nice aim! You have scored a hit')
+                    this.grid[row][column].status = 'hit'
+                    if (this.checkForSink(square.shipName)) {
+                        console.log('And you have also sank the ship!')
+                        console.log('')
+                        if (this.checkForGameOver()) {
+                            console.log('Congratulations, you have sank all the ships!')
+                            console.log('')
+                            gameOver = true
+                            process.exit()
+                        }
+                    }
+                }
+
+            })
+
+            console.log('')
+        }
+        return
     }
 }
 
