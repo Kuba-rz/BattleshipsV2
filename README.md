@@ -1,6 +1,8 @@
 # BattleshipsV2
 A smiple console application for playing the battleships game. 
 
+This application was created for me to get familiar with, and practice the new concept for me which is working in a TDD fashion.
+
 To get started and play the game, simply download the zip folder, unzip it and open it in an IDE.
 
 Having node installed, type 'node app.js' in the console.
